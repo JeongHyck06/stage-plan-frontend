@@ -27,7 +27,7 @@ export const createPerformanceSchema = z
                 50,
                 '밴드명은 최대 50자까지 입력할 수 있습니다'
             ),
-        venue: z
+        location: z
             .string()
             .min(1, '장소를 입력해주세요')
             .max(
@@ -37,37 +37,15 @@ export const createPerformanceSchema = z
         performanceDate: z
             .string()
             .min(1, '공연 날짜를 선택해주세요'),
-        startTime: z
-            .string()
-            .min(1, '시작 시간을 입력해주세요')
-            .regex(
-                /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-                '올바른 시간 형식으로 입력해주세요 (HH:MM)'
-            ),
-        endTime: z
-            .string()
-            .min(1, '종료 시간을 입력해주세요')
-            .regex(
-                /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-                '올바른 시간 형식으로 입력해주세요 (HH:MM)'
-            ),
+        ticketPrice: z
+            .number()
+            .min(0, '티켓 가격은 0원 이상이어야 합니다')
+            .optional(),
+        maxAudience: z
+            .number()
+            .min(1, '최대 관객수는 1명 이상이어야 합니다')
+            .optional(),
     })
-    .refine(
-        (data) => {
-            const startTime = new Date(
-                `2000-01-01T${data.startTime}`
-            );
-            const endTime = new Date(
-                `2000-01-01T${data.endTime}`
-            );
-            return endTime > startTime;
-        },
-        {
-            message:
-                '종료 시간은 시작 시간보다 늦어야 합니다',
-            path: ['endTime'],
-        }
-    )
     .refine(
         (data) => {
             const performanceDate = new Date(
@@ -116,7 +94,7 @@ export const updatePerformanceSchema = z
                 '밴드명은 최대 50자까지 입력할 수 있습니다'
             )
             .optional(),
-        venue: z
+        location: z
             .string()
             .min(1, '장소를 입력해주세요')
             .max(
@@ -128,42 +106,15 @@ export const updatePerformanceSchema = z
             .string()
             .min(1, '공연 날짜를 선택해주세요')
             .optional(),
-        startTime: z
-            .string()
-            .min(1, '시작 시간을 입력해주세요')
-            .regex(
-                /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-                '올바른 시간 형식으로 입력해주세요 (HH:MM)'
-            )
+        ticketPrice: z
+            .number()
+            .min(0, '티켓 가격은 0원 이상이어야 합니다')
             .optional(),
-        endTime: z
-            .string()
-            .min(1, '종료 시간을 입력해주세요')
-            .regex(
-                /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-                '올바른 시간 형식으로 입력해주세요 (HH:MM)'
-            )
+        maxAudience: z
+            .number()
+            .min(1, '최대 관객수는 1명 이상이어야 합니다')
             .optional(),
     })
-    .refine(
-        (data) => {
-            if (data.startTime && data.endTime) {
-                const startTime = new Date(
-                    `2000-01-01T${data.startTime}`
-                );
-                const endTime = new Date(
-                    `2000-01-01T${data.endTime}`
-                );
-                return endTime > startTime;
-            }
-            return true;
-        },
-        {
-            message:
-                '종료 시간은 시작 시간보다 늦어야 합니다',
-            path: ['endTime'],
-        }
-    )
     .refine(
         (data) => {
             if (data.performanceDate) {

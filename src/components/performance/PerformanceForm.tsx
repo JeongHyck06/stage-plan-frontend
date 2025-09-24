@@ -78,11 +78,11 @@ export default function PerformanceForm({
                   content: performance.content,
                   genre: performance.genre,
                   bandName: performance.bandName,
-                  venue: performance.venue,
+                  location: performance.location,
                   performanceDate:
                       performance.performanceDate,
-                  startTime: performance.startTime,
-                  endTime: performance.endTime,
+                  ticketPrice: performance.ticketPrice,
+                  maxAudience: performance.maxAudience,
               }
             : undefined,
     });
@@ -114,10 +114,28 @@ export default function PerformanceForm({
             setPerformances(updatedPerformances);
 
             onSuccess();
-        } catch (error) {
-            const errorMessage = isEditing
+        } catch (error: any) {
+            console.error(
+                'Performance form submission error:',
+                error
+            );
+
+            let errorMessage = isEditing
                 ? '공연 수정에 실패했습니다.'
                 : '공연 등록에 실패했습니다.';
+
+            // 구체적인 에러 메시지가 있으면 표시
+            if (error.response?.data?.message) {
+                errorMessage += ` (${error.response.data.message})`;
+            } else if (error.response?.status === 401) {
+                errorMessage = '로그인이 필요합니다.';
+            } else if (error.response?.status === 403) {
+                errorMessage = '권한이 없습니다.';
+            } else if (error.response?.status >= 500) {
+                errorMessage =
+                    '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+            }
+
             toast.error(errorMessage);
         } finally {
             setIsSubmitting(false);
@@ -306,32 +324,37 @@ export default function PerformanceForm({
 
                                 <div className="space-y-2">
                                     <label
-                                        htmlFor="startTime"
+                                        htmlFor="ticketPrice"
                                         className="text-sm font-medium flex items-center space-x-2"
                                     >
-                                        <Clock className="h-4 w-4" />
+                                        <Users className="h-4 w-4" />
                                         <span>
-                                            시작 시간 *
+                                            티켓 가격 (원)
                                         </span>
                                     </label>
                                     <Input
-                                        id="startTime"
-                                        type="time"
+                                        id="ticketPrice"
+                                        type="number"
+                                        placeholder="예: 10000"
                                         {...register(
-                                            'startTime'
+                                            'ticketPrice',
+                                            {
+                                                valueAsNumber:
+                                                    true,
+                                            }
                                         )}
                                         className={
-                                            errors.startTime
+                                            errors.ticketPrice
                                                 ? 'border-red-500'
                                                 : ''
                                         }
                                     />
-                                    {errors.startTime && (
+                                    {errors.ticketPrice && (
                                         <p className="text-sm text-red-500">
                                             {
                                                 errors
-                                                    .startTime
-                                                    .message
+                                                    .ticketPrice
+                                                    ?.message
                                             }
                                         </p>
                                     )}
@@ -339,61 +362,68 @@ export default function PerformanceForm({
 
                                 <div className="space-y-2">
                                     <label
-                                        htmlFor="endTime"
+                                        htmlFor="maxAudience"
                                         className="text-sm font-medium flex items-center space-x-2"
                                     >
-                                        <Clock className="h-4 w-4" />
+                                        <Users className="h-4 w-4" />
                                         <span>
-                                            종료 시간 *
+                                            최대 관객수 (명)
                                         </span>
                                     </label>
                                     <Input
-                                        id="endTime"
-                                        type="time"
+                                        id="maxAudience"
+                                        type="number"
+                                        placeholder="예: 100"
                                         {...register(
-                                            'endTime'
+                                            'maxAudience',
+                                            {
+                                                valueAsNumber:
+                                                    true,
+                                            }
                                         )}
                                         className={
-                                            errors.endTime
+                                            errors.maxAudience
                                                 ? 'border-red-500'
                                                 : ''
                                         }
                                     />
-                                    {errors.endTime && (
+                                    {errors.maxAudience && (
                                         <p className="text-sm text-red-500">
                                             {
                                                 errors
-                                                    .endTime
-                                                    .message
+                                                    .maxAudience
+                                                    ?.message
                                             }
                                         </p>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Venue */}
+                            {/* Location */}
                             <div className="space-y-2">
                                 <label
-                                    htmlFor="venue"
+                                    htmlFor="location"
                                     className="text-sm font-medium flex items-center space-x-2"
                                 >
                                     <MapPin className="h-4 w-4" />
                                     <span>공연 장소 *</span>
                                 </label>
                                 <Input
-                                    id="venue"
+                                    id="location"
                                     placeholder="공연 장소를 입력하세요"
-                                    {...register('venue')}
+                                    {...register(
+                                        'location'
+                                    )}
                                     className={
-                                        errors.venue
+                                        errors.location
                                             ? 'border-red-500'
                                             : ''
                                     }
                                 />
-                                {errors.venue && (
+                                {errors.location && (
                                     <p className="text-sm text-red-500">
                                         {
-                                            errors.venue
+                                            errors.location
                                                 .message
                                         }
                                     </p>
