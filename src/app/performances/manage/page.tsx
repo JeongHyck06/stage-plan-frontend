@@ -24,7 +24,8 @@ export default function ManagePerformancesPage() {
     const [performances, setPerformances] = useState<
         Performance[]
     >([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [performancesLoading, setPerformancesLoading] =
+        useState(true);
     const [showCreateForm, setShowCreateForm] =
         useState(false);
     const [editingPerformance, setEditingPerformance] =
@@ -45,7 +46,7 @@ export default function ManagePerformancesPage() {
 
     const loadPerformances = async () => {
         try {
-            setIsLoading(true);
+            setPerformancesLoading(true);
             const data =
                 await performanceApi.getMyPerformances();
             setPerformances(data);
@@ -54,7 +55,7 @@ export default function ManagePerformancesPage() {
                 '공연 정보를 불러오는데 실패했습니다.'
             );
         } finally {
-            setIsLoading(false);
+            setPerformancesLoading(false);
         }
     };
 
@@ -210,7 +211,7 @@ export default function ManagePerformancesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
             >
-                {isLoading ? (
+                {performancesLoading ? (
                     <div className="text-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                         <p className="mt-2 text-muted-foreground">
