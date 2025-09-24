@@ -5,7 +5,6 @@ export interface SignUpRequest {
     email: string;
     password: string;
     name: string;
-    role: 'USER' | 'PERFORMER';
 }
 
 export interface SignInRequest {

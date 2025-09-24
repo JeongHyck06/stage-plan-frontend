@@ -21,9 +21,6 @@ export const signUpSchema = z
                 50,
                 '이름은 최대 50자까지 입력할 수 있습니다'
             ),
-        role: z.enum(['USER', 'PERFORMER'], {
-            required_error: '역할을 선택해주세요',
-        }),
     })
     .refine(
         (data) => data.password === data.confirmPassword,

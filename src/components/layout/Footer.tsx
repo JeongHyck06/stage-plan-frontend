@@ -32,7 +32,7 @@ export default function Footer() {
                             </span>
                         </motion.div>
                         <p className="text-sm text-muted-foreground max-w-xs">
-                            공연자와 관객을 연결하는
+                            공연 일정을 관리하고 공유하는
                             스테이지 플랫폼입니다. 모든 공연
                             정보를 한 곳에서 확인하고
                             예약하세요.

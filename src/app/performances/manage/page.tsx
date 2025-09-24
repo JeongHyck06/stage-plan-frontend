@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Plus, Calendar, Settings } from 'lucide-react';
+import { Calendar, Settings } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
@@ -30,18 +30,18 @@ export default function ManagePerformancesPage() {
     const [editingPerformance, setEditingPerformance] =
         useState<Performance | null>(null);
 
-    const { isAuthenticated, user } = useAuthStore();
+    const { isAuthenticated, user, isLoading } =
+        useAuthStore();
 
     useEffect(() => {
-        if (
-            !isAuthenticated ||
-            user?.role !== 'PERFORMER'
-        ) {
+        if (!isLoading && !isAuthenticated) {
             router.push('/auth/login');
             return;
         }
-        loadPerformances();
-    }, [isAuthenticated, user, router]);
+        if (isAuthenticated) {
+            loadPerformances();
+        }
+    }, [isAuthenticated, isLoading, router]);
 
     const loadPerformances = async () => {
         try {
@@ -85,15 +85,30 @@ export default function ManagePerformancesPage() {
         performances.filter((p) => p.status === 'COMPLETED')
             .length;
 
-    if (!isAuthenticated || user?.role !== 'PERFORMER') {
+    // 로딩 중이거나 인증 상태를 확인하는 중
+    if (isLoading || (!isAuthenticated && !isLoading)) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">
+                        인증 상태를 확인하는 중...
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold mb-4">
-                        접근 권한이 없습니다
+                        로그인이 필요합니다
                     </h1>
                     <p className="text-muted-foreground">
-                        공연자만 공연을 관리할 수 있습니다.
+                        공연을 관리하려면 먼저
+                        로그인해주세요.
                     </p>
                 </div>
             </div>
@@ -120,8 +135,7 @@ export default function ManagePerformancesPage() {
                 <Button
                     onClick={() => setShowCreateForm(true)}
                 >
-                    <Plus className="h-4 w-4 mr-2" />새 공연
-                    등록
+                    새 공연 등록
                 </Button>
             </motion.div>
 

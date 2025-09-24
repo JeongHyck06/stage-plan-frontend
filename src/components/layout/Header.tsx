@@ -18,7 +18,7 @@ import { useAuthStore } from '@/store/auth';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { user, isAuthenticated, logout } =
+    const { user, isAuthenticated, logout, isLoading } =
         useAuthStore();
     const router = useRouter();
 
@@ -82,17 +82,12 @@ export default function Header() {
 
                     {/* User Actions */}
                     <div className="hidden md:flex items-center space-x-4">
-                        {isAuthenticated ? (
+                        {!isLoading && isAuthenticated ? (
                             <div className="flex items-center space-x-4">
                                 <div className="flex items-center space-x-2 text-sm">
                                     <User className="h-4 w-4" />
                                     <span className="text-muted-foreground">
-                                        {user?.name} (
-                                        {user?.role ===
-                                        'PERFORMER'
-                                            ? '공연자'
-                                            : '일반'}
-                                        )
+                                        {user?.name}
                                     </span>
                                 </div>
                                 <Button
@@ -170,18 +165,13 @@ export default function Header() {
                             ))}
 
                             <div className="pt-4 border-t space-y-2">
-                                {isAuthenticated ? (
+                                {!isLoading &&
+                                isAuthenticated ? (
                                     <>
                                         <div className="flex items-center space-x-2 text-sm px-2">
                                             <User className="h-4 w-4" />
                                             <span className="text-muted-foreground">
-                                                {user?.name}{' '}
-                                                (
-                                                {user?.role ===
-                                                'PERFORMER'
-                                                    ? '공연자'
-                                                    : '일반'}
-                                                )
+                                                {user?.name}
                                             </span>
                                         </div>
                                         <Button

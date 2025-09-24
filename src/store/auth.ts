@@ -14,28 +14,25 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             user: null,
             token: null,
             isAuthenticated: false,
-            isLoading: false,
+            isLoading: true, // 초기 로딩 상태를 true로 설정
             setAuth: (authData: AuthResponse) => {
-                localStorage.setItem(
-                    'token',
-                    authData.token
-                );
                 set({
                     user: authData.user,
-                    token: authData.token,
+                    token: authData.accessToken,
                     isAuthenticated: true,
+                    isLoading: false,
                 });
             },
             logout: () => {
-                localStorage.removeItem('token');
                 set({
                     user: null,
                     token: null,
                     isAuthenticated: false,
+                    isLoading: false,
                 });
             },
             setLoading: (loading: boolean) =>
@@ -48,6 +45,12 @@ export const useAuthStore = create<AuthState>()(
                 token: state.token,
                 isAuthenticated: state.isAuthenticated,
             }),
+            onRehydrateStorage: () => (state) => {
+                // persist에서 복원된 후 로딩 상태를 false로 설정
+                if (state) {
+                    state.isLoading = false;
+                }
+            },
         }
     )
 );

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     Calendar as CalendarIcon,
-    Plus,
     Music,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -34,7 +33,11 @@ export default function Home() {
     >();
     const [selectedPerformance, setSelectedPerformance] =
         useState<Performance | null>(null);
-    const { isAuthenticated, user } = useAuthStore();
+    const {
+        isAuthenticated,
+        user,
+        isLoading: authLoading,
+    } = useAuthStore();
     const {
         performances,
         filteredPerformances,
@@ -176,7 +179,7 @@ export default function Home() {
                     스테이지 플랜
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    공연자와 관객을 연결하는 플랫폼에서
+                    공연 일정을 관리하고 공유하는 플랫폼에서
                     <br />
                     모든 공연 정보를 한 곳에서 확인하고
                     예약하세요
@@ -247,7 +250,7 @@ export default function Home() {
                     <CardContent className="p-6">
                         <div className="flex items-center space-x-3">
                             <div className="p-2 bg-purple-100 rounded-lg">
-                                <Plus className="h-5 w-5 text-purple-600" />
+                                <CalendarIcon className="h-5 w-5 text-purple-600" />
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
@@ -277,15 +280,13 @@ export default function Home() {
                     <h2 className="text-2xl font-bold">
                         공연 캘린더
                     </h2>
-                    {isAuthenticated &&
-                        user?.role === 'PERFORMER' && (
-                            <Button asChild>
-                                <a href="/performances/create">
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    공연 등록
-                                </a>
-                            </Button>
-                        )}
+                    {!authLoading && isAuthenticated && (
+                        <Button asChild>
+                            <a href="/performances/create">
+                                공연 등록
+                            </a>
+                        </Button>
+                    )}
                 </div>
 
                 <CalendarView

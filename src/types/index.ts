@@ -2,12 +2,13 @@ export interface User {
     id: number;
     email: string;
     name: string;
-    role: 'USER' | 'PERFORMER';
     createdAt: string;
 }
 
 export interface AuthResponse {
-    token: string;
+    accessToken: string;
+    tokenType: string;
+    expiresIn: number;
     user: User;
 }
 

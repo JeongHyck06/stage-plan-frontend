@@ -6,13 +6,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import {
-    Eye,
-    EyeOff,
-    Calendar,
-    User,
-    Users,
-} from 'lucide-react';
+import { Eye, EyeOff, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
@@ -47,8 +41,6 @@ export default function SignUpPage() {
     } = useForm<SignUpFormData>({
         resolver: zodResolver(signUpSchema),
     });
-
-    const selectedRole = watch('role');
 
     const onSubmit = async (data: SignUpFormData) => {
         try {
@@ -102,7 +94,7 @@ export default function SignUpPage() {
                             스테이지 플랜 가입
                         </CardTitle>
                         <CardDescription>
-                            공연자와 관객을 연결하는
+                            공연 일정을 관리하고 공유하는
                             플랫폼에 오신 것을 환영합니다
                         </CardDescription>
                     </CardHeader>
@@ -266,72 +258,6 @@ export default function SignUpPage() {
                                         {
                                             errors
                                                 .confirmPassword
-                                                .message
-                                        }
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">
-                                    역할 선택
-                                </label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <label
-                                        className={`relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 p-4 transition-all hover:border-primary ${
-                                            selectedRole ===
-                                            'USER'
-                                                ? 'border-primary bg-primary/5'
-                                                : 'border-muted'
-                                        }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            value="USER"
-                                            {...register(
-                                                'role'
-                                            )}
-                                            className="sr-only"
-                                        />
-                                        <User className="h-6 w-6 mb-2" />
-                                        <span className="text-sm font-medium">
-                                            일반 사용자
-                                        </span>
-                                        <span className="text-xs text-muted-foreground text-center">
-                                            공연을 검색하고
-                                            예약
-                                        </span>
-                                    </label>
-                                    <label
-                                        className={`relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 p-4 transition-all hover:border-primary ${
-                                            selectedRole ===
-                                            'PERFORMER'
-                                                ? 'border-primary bg-primary/5'
-                                                : 'border-muted'
-                                        }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            value="PERFORMER"
-                                            {...register(
-                                                'role'
-                                            )}
-                                            className="sr-only"
-                                        />
-                                        <Users className="h-6 w-6 mb-2" />
-                                        <span className="text-sm font-medium">
-                                            공연자
-                                        </span>
-                                        <span className="text-xs text-muted-foreground text-center">
-                                            공연을 등록하고
-                                            관리
-                                        </span>
-                                    </label>
-                                </div>
-                                {errors.role && (
-                                    <p className="text-sm text-red-500">
-                                        {
-                                            errors.role
                                                 .message
                                         }
                                     </p>
