@@ -107,10 +107,8 @@ export default function CalendarView({
         status: Performance['status']
     ) => {
         switch (status) {
-            case 'UPCOMING':
+            case 'ACTIVE':
                 return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'ONGOING':
-                return 'bg-green-100 text-green-800 border-green-200';
             case 'COMPLETED':
                 return 'bg-gray-100 text-gray-800 border-gray-200';
             case 'CANCELLED':
@@ -217,7 +215,7 @@ export default function CalendarView({
                                         delay: index * 0.01,
                                     }}
                                     className={`
-                                        min-h-[100px] border-r border-b last:border-r-0 p-2 cursor-pointer transition-all hover:bg-muted/50
+                                        min-h-[120px] border-r border-b last:border-r-0 p-2 cursor-pointer transition-all hover:bg-muted/50
                                         ${
                                             !isCurrentMonth
                                                 ? 'text-muted-foreground bg-muted/20'
@@ -286,17 +284,51 @@ export default function CalendarView({
                                                             performance.status
                                                         )}
                                                     `}
-                                                            title={
+                                                            title={`${
                                                                 performance.title
-                                                            }
+                                                            } - ${new Date(
+                                                                performance.performanceDate
+                                                            ).toLocaleTimeString(
+                                                                'ko-KR',
+                                                                {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                }
+                                                            )} - ${
+                                                                performance.location
+                                                            }`}
                                                         >
-                                                            <div className="flex items-center space-x-1">
-                                                                <Music className="h-3 w-3" />
-                                                                <span className="truncate">
-                                                                    {
-                                                                        performance.title
-                                                                    }
-                                                                </span>
+                                                            <div className="space-y-0.5">
+                                                                <div className="flex items-center space-x-1">
+                                                                    <Music className="h-3 w-3" />
+                                                                    <span className="truncate font-medium">
+                                                                        {
+                                                                            performance.title
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center space-x-1 text-xs opacity-80">
+                                                                    <Clock className="h-2 w-2" />
+                                                                    <span className="truncate">
+                                                                        {new Date(
+                                                                            performance.performanceDate
+                                                                        ).toLocaleTimeString(
+                                                                            'ko-KR',
+                                                                            {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                            }
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center space-x-1 text-xs opacity-80">
+                                                                    <MapPin className="h-2 w-2" />
+                                                                    <span className="truncate">
+                                                                        {
+                                                                            performance.location
+                                                                        }
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </motion.div>
                                                     )

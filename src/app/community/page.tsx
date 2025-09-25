@@ -134,7 +134,7 @@ export default function CommunityPage() {
 
     const getUpcomingPerformances = () => {
         return performances.filter(
-            (p) => p.status === 'UPCOMING'
+            (p) => p.status === 'ACTIVE'
         );
     };
 
