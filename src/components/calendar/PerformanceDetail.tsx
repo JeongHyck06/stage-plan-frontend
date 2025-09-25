@@ -34,13 +34,9 @@ export default function PerformanceDetail({
         status: Performance['status']
     ) => {
         switch (status) {
-            case 'UPCOMING':
+            case 'ACTIVE':
                 return (
                     <Badge variant="success">예정</Badge>
-                );
-            case 'ONGOING':
-                return (
-                    <Badge variant="warning">진행중</Badge>
                 );
             case 'COMPLETED':
                 return (
@@ -61,11 +57,31 @@ export default function PerformanceDetail({
         }
     };
 
-    const formatDateTime = (date: string, time: string) => {
-        const dateTime = new Date(`${date}T${time}`);
-        return format(dateTime, 'yyyy년 M월 d일 HH:mm', {
-            locale: ko,
-        });
+    const formatDateTime = (dateTimeString: string) => {
+        try {
+            const dateTime = new Date(dateTimeString);
+            if (isNaN(dateTime.getTime())) {
+                console.error(
+                    'Invalid date string:',
+                    dateTimeString
+                );
+                return '날짜 정보 없음';
+            }
+            return format(
+                dateTime,
+                'yyyy년 M월 d일 HH:mm',
+                {
+                    locale: ko,
+                }
+            );
+        } catch (error) {
+            console.error(
+                'Error formatting date:',
+                error,
+                dateTimeString
+            );
+            return '날짜 정보 없음';
+        }
     };
 
     return (
@@ -119,30 +135,26 @@ export default function PerformanceDetail({
                                         </p>
                                         <p className="font-medium">
                                             {formatDateTime(
-                                                performance.performanceDate,
-                                                performance.startTime
+                                                performance.performanceDate
                                             )}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center space-x-3">
-                                    <Clock className="h-5 w-5 text-muted-foreground" />
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">
-                                            공연 시간
-                                        </p>
-                                        <p className="font-medium">
-                                            {
-                                                performance.startTime
-                                            }{' '}
-                                            -{' '}
-                                            {
-                                                performance.endTime
-                                            }
-                                        </p>
+                                {performance.ticketPrice && (
+                                    <div className="flex items-center space-x-3">
+                                        <Clock className="h-5 w-5 text-muted-foreground" />
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">
+                                                티켓 가격
+                                            </p>
+                                            <p className="font-medium">
+                                                {performance.ticketPrice.toLocaleString()}
+                                                원
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 <div className="flex items-center space-x-3">
                                     <MapPin className="h-5 w-5 text-muted-foreground" />
@@ -152,7 +164,7 @@ export default function PerformanceDetail({
                                         </p>
                                         <p className="font-medium">
                                             {
-                                                performance.venue
+                                                performance.location
                                             }
                                         </p>
                                     </div>
@@ -171,6 +183,21 @@ export default function PerformanceDetail({
                                         </p>
                                     </div>
                                 </div>
+
+                                {performance.maxAudience && (
+                                    <div className="flex items-center space-x-3">
+                                        <Users className="h-5 w-5 text-muted-foreground" />
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">
+                                                최대 관객수
+                                            </p>
+                                            <p className="font-medium">
+                                                {performance.maxAudience.toLocaleString()}
+                                                명
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -199,7 +226,7 @@ export default function PerformanceDetail({
                                 닫기
                             </Button>
                             {performance.status ===
-                                'UPCOMING' && (
+                                'ACTIVE' && (
                                 <Button>예약하기</Button>
                             )}
                         </div>
