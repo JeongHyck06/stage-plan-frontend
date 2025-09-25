@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     Calendar as CalendarIcon,
@@ -33,15 +33,11 @@ export default function Home() {
     >();
     const [selectedPerformance, setSelectedPerformance] =
         useState<Performance | null>(null);
-    const {
-        isAuthenticated,
-        user,
-        isLoading: authLoading,
-    } = useAuthStore();
+    const { isAuthenticated, isLoading: authLoading } =
+        useAuthStore();
     const {
         performances,
         filteredPerformances,
-        calendarEvents,
         isLoading,
         setPerformances,
         setFilteredPerformances,
@@ -50,10 +46,25 @@ export default function Home() {
         clearFilters,
     } = usePerformanceStore();
 
+    const loadPerformances = useCallback(async () => {
+        try {
+            setLoading(true);
+            const data =
+                await performanceApi.getAllPerformances();
+            setPerformances(data);
+        } catch {
+            toast.error(
+                '공연 정보를 불러오는데 실패했습니다.'
+            );
+        } finally {
+            setLoading(false);
+        }
+    }, [setPerformances, setLoading]);
+
     // 공연 데이터 로드
     useEffect(() => {
         loadPerformances();
-    }, []);
+    }, [loadPerformances]);
 
     // 캘린더 이벤트 생성
     useEffect(() => {
@@ -62,29 +73,19 @@ export default function Home() {
                 id: performance.id,
                 title: performance.title,
                 date: new Date(performance.performanceDate),
-                time: performance.startTime,
-                venue: performance.venue,
+                time: new Date(
+                    performance.performanceDate
+                ).toLocaleTimeString('ko-KR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                }),
+                venue: performance.location,
                 genre: performance.genre,
                 bandName: performance.bandName,
                 performance,
             }));
         setCalendarEvents(events);
     }, [filteredPerformances, setCalendarEvents]);
-
-    const loadPerformances = async () => {
-        try {
-            setLoading(true);
-            const data =
-                await performanceApi.getAllPerformances();
-            setPerformances(data);
-        } catch (error) {
-            toast.error(
-                '공연 정보를 불러오는데 실패했습니다.'
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleSearch = async (filters: SearchFilters) => {
         try {
@@ -94,7 +95,7 @@ export default function Home() {
                     filters
                 );
             setFilteredPerformances(data);
-        } catch (error) {
+        } catch {
             toast.error('검색에 실패했습니다.');
         } finally {
             setLoading(false);
@@ -314,69 +315,105 @@ export default function Home() {
                         )}{' '}
                         공연
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredPerformances
-                            .filter((performance) => {
-                                const performanceDate =
-                                    new Date(
-                                        performance.performanceDate
+                    {(() => {
+                        const selectedDatePerformances =
+                            filteredPerformances.filter(
+                                (performance) => {
+                                    const performanceDate =
+                                        new Date(
+                                            performance.performanceDate
+                                        );
+                                    return (
+                                        performanceDate.toDateString() ===
+                                        selectedDate.toDateString()
                                     );
-                                return (
-                                    performanceDate.toDateString() ===
-                                    selectedDate.toDateString()
-                                );
-                            })
-                            .map((performance) => (
-                                <Card
-                                    key={performance.id}
-                                    className="cursor-pointer hover:shadow-lg transition-shadow"
-                                    onClick={() =>
-                                        handlePerformanceSelect(
-                                            performance
-                                        )
-                                    }
-                                >
-                                    <CardHeader>
-                                        <CardTitle className="text-lg">
-                                            {
-                                                performance.title
-                                            }
-                                        </CardTitle>
+                                }
+                            );
+
+                        if (
+                            selectedDatePerformances.length ===
+                            0
+                        ) {
+                            return (
+                                <Card>
+                                    <CardContent className="p-8 text-center">
+                                        <CalendarIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                        <h4 className="text-lg font-medium mb-2">
+                                            해당 날짜에
+                                            공연이 없습니다
+                                        </h4>
                                         <p className="text-muted-foreground">
-                                            {
-                                                performance.bandName
-                                            }
+                                            다른 날짜를
+                                            선택하거나 새
+                                            공연을
+                                            등록해보세요.
                                         </p>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-2 text-sm">
-                                            <p>
-                                                📍{' '}
-                                                {
-                                                    performance.venue
-                                                }
-                                            </p>
-                                            <p>
-                                                🕒{' '}
-                                                {
-                                                    performance.startTime
-                                                }{' '}
-                                                -{' '}
-                                                {
-                                                    performance.endTime
-                                                }
-                                            </p>
-                                            <p>
-                                                🎵{' '}
-                                                {
-                                                    performance.genre
-                                                }
-                                            </p>
-                                        </div>
                                     </CardContent>
                                 </Card>
-                            ))}
-                    </div>
+                            );
+                        }
+
+                        return (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {selectedDatePerformances.map(
+                                    (performance) => (
+                                        <Card
+                                            key={
+                                                performance.id
+                                            }
+                                            className="cursor-pointer hover:shadow-lg transition-shadow"
+                                            onClick={() =>
+                                                handlePerformanceSelect(
+                                                    performance
+                                                )
+                                            }
+                                        >
+                                            <CardHeader>
+                                                <CardTitle className="text-lg">
+                                                    {
+                                                        performance.title
+                                                    }
+                                                </CardTitle>
+                                                <p className="text-muted-foreground">
+                                                    {
+                                                        performance.bandName
+                                                    }
+                                                </p>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-2 text-sm">
+                                                    <p>
+                                                        📍{' '}
+                                                        {
+                                                            performance.location
+                                                        }
+                                                    </p>
+                                                    <p>
+                                                        🕒{' '}
+                                                        {new Date(
+                                                            performance.performanceDate
+                                                        ).toLocaleTimeString(
+                                                            'ko-KR',
+                                                            {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit',
+                                                            }
+                                                        )}
+                                                    </p>
+                                                    <p>
+                                                        🎵{' '}
+                                                        {
+                                                            performance.genre
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    )
+                                )}
+                            </div>
+                        );
+                    })()}
                 </motion.div>
             )}
 

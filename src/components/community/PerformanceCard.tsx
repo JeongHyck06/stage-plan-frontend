@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     MapPin,
@@ -68,21 +68,17 @@ export default function PerformanceCard({
     };
 
     // 컴포넌트 마운트 시 리뷰 정보 로드
-    useState(() => {
+    useEffect(() => {
         loadReviewStats();
-    });
+    }, [performance.id]);
 
     const getStatusBadge = (
         status: Performance['status']
     ) => {
         switch (status) {
-            case 'UPCOMING':
+            case 'ACTIVE':
                 return (
                     <Badge variant="success">예정</Badge>
-                );
-            case 'ONGOING':
-                return (
-                    <Badge variant="warning">진행중</Badge>
                 );
             case 'COMPLETED':
                 return (
@@ -103,11 +99,27 @@ export default function PerformanceCard({
         }
     };
 
-    const formatDateTime = (date: string, time: string) => {
-        const dateTime = new Date(`${date}T${time}`);
-        return format(dateTime, 'M월 d일 HH:mm', {
-            locale: ko,
-        });
+    const formatDateTime = (dateTimeString: string) => {
+        try {
+            const dateTime = new Date(dateTimeString);
+            if (isNaN(dateTime.getTime())) {
+                console.error(
+                    'Invalid date string:',
+                    dateTimeString
+                );
+                return '날짜 정보 없음';
+            }
+            return format(dateTime, 'M월 d일 HH:mm', {
+                locale: ko,
+            });
+        } catch (error) {
+            console.error(
+                'Error formatting date:',
+                error,
+                dateTimeString
+            );
+            return '날짜 정보 없음';
+        }
     };
 
     const renderStars = (rating: number) => {
@@ -159,15 +171,14 @@ export default function PerformanceCard({
                             <Clock className="h-4 w-4 text-muted-foreground" />
                             <span>
                                 {formatDateTime(
-                                    performance.performanceDate,
-                                    performance.startTime
+                                    performance.performanceDate
                                 )}
                             </span>
                         </div>
                         <div className="flex items-center space-x-2">
                             <MapPin className="h-4 w-4 text-muted-foreground" />
                             <span className="line-clamp-1">
-                                {performance.venue}
+                                {performance.location}
                             </span>
                         </div>
                         <div className="flex items-center space-x-2">
