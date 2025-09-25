@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast';
 
 import SearchBar from '@/components/search/SearchBar';
+import SearchResultsList from '@/components/search/SearchResultsList';
 import CalendarView from '@/components/calendar/CalendarView';
 import PerformanceDetail from '@/components/calendar/PerformanceDetail';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,8 @@ export default function Home() {
     >();
     const [selectedPerformance, setSelectedPerformance] =
         useState<Performance | null>(null);
+    const [showSearchResults, setShowSearchResults] =
+        useState(false);
     const { isAuthenticated, isLoading: authLoading } =
         useAuthStore();
     const {
@@ -95,6 +98,7 @@ export default function Home() {
                     filters
                 );
             setFilteredPerformances(data);
+            setShowSearchResults(true);
         } catch {
             toast.error('검색에 실패했습니다.');
         } finally {
@@ -104,6 +108,7 @@ export default function Home() {
 
     const handleClearSearch = () => {
         clearFilters();
+        setShowSearchResults(false);
     };
 
     const handleDateSelect = (date: Date) => {
@@ -199,6 +204,23 @@ export default function Home() {
                     isLoading={isLoading}
                 />
             </motion.div>
+
+            {/* Search Results */}
+            {showSearchResults && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                >
+                    <SearchResultsList
+                        performances={filteredPerformances}
+                        onPerformanceClick={
+                            handlePerformanceSelect
+                        }
+                        isLoading={isLoading}
+                    />
+                </motion.div>
+            )}
 
             {/* Quick Stats */}
             <motion.div
