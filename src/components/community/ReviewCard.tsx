@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { Star, User, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -29,7 +30,14 @@ export default function ReviewCard({
     showActions = false,
     currentUserId,
 }: ReviewCardProps) {
+    const router = useRouter();
     const isOwner = currentUserId === review.userId;
+
+    const handleUserClick = () => {
+        if (review.userId) {
+            router.push(`/profile/${review.userId}`);
+        }
+    };
 
     const renderStars = (rating: number) => {
         return Array.from({ length: 5 }, (_, i) => (
@@ -87,13 +95,18 @@ export default function ReviewCard({
             <Card className="hover:shadow-md transition-shadow duration-200">
                 <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-3">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                <User className="h-5 w-5 text-white" />
-                            </div>
+                        <div
+                            className="flex items-center space-x-3 cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
+                            onClick={handleUserClick}
+                        >
+                            <img
+                                src="/default-profile.png"
+                                alt="사용자 프로필"
+                                className="h-10 w-10 rounded-full object-cover"
+                            />
                             <div>
                                 <div className="flex items-center space-x-2">
-                                    <span className="font-medium">
+                                    <span className="font-medium hover:text-primary transition-colors">
                                         {review.user
                                             ?.name ||
                                             '익명 사용자'}
