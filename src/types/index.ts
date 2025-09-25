@@ -16,18 +16,14 @@ export interface Performance {
     id: number;
     title: string;
     content: string;
+    location: string;
+    performanceDate: string;
     genre: string;
     bandName: string;
-    venue: string;
-    performanceDate: string;
-    startTime: string;
-    endTime: string;
-    status:
-        | 'UPCOMING'
-        | 'ONGOING'
-        | 'COMPLETED'
-        | 'CANCELLED';
-    userId: number;
+    ticketPrice?: number;
+    maxAudience?: number;
+    status: 'ACTIVE' | 'CANCELLED' | 'COMPLETED';
+    artistName: string;
     createdAt: string;
     updatedAt: string;
 }
