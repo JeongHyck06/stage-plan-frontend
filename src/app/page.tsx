@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
     Calendar as CalendarIcon,
     Music,
+    User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import SearchBar from '@/components/search/SearchBar';
+import SearchResultsList from '@/components/search/SearchResultsList';
 import CalendarView from '@/components/calendar/CalendarView';
 import PerformanceDetail from '@/components/calendar/PerformanceDetail';
 import { Button } from '@/components/ui/button';
@@ -28,6 +31,7 @@ import {
 } from '@/types';
 
 export default function Home() {
+    const router = useRouter();
     const [selectedDate, setSelectedDate] = useState<
         Date | undefined
     >();
@@ -135,6 +139,10 @@ export default function Home() {
         setSelectedPerformance(null);
     };
 
+    const handleArtistClick = (artistId: number) => {
+        router.push(`/profile/${artistId}`);
+    };
+
     const getTodayPerformances = () => {
         const today = new Date();
         return filteredPerformances.filter(
@@ -199,6 +207,23 @@ export default function Home() {
                     isLoading={isLoading}
                 />
             </motion.div>
+
+            {/* Search Results */}
+            {filteredPerformances.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                >
+                    <SearchResultsList
+                        performances={filteredPerformances}
+                        onPerformanceClick={
+                            handlePerformanceSelect
+                        }
+                        isLoading={isLoading}
+                    />
+                </motion.div>
+            )}
 
             {/* Quick Stats */}
             <motion.div
@@ -294,6 +319,7 @@ export default function Home() {
                     performances={filteredPerformances}
                     onDateSelect={handleDateSelect}
                     selectedDate={selectedDate}
+                    onArtistClick={handleArtistClick}
                 />
             </motion.div>
 
@@ -406,6 +432,23 @@ export default function Home() {
                                                             performance.genre
                                                         }
                                                     </p>
+                                                    <div
+                                                        className="flex items-center space-x-1 cursor-pointer hover:bg-muted/50 p-1 rounded transition-colors"
+                                                        onClick={(
+                                                            e
+                                                        ) => {
+                                                            e.stopPropagation();
+                                                            handleArtistClick(
+                                                                performance.artistId
+                                                            );
+                                                        }}
+                                                    >
+                                                        <User className="h-3 w-3 text-muted-foreground" />
+                                                        <span className="text-xs text-muted-foreground hover:text-primary">
+                                                            {performance.artistNickname ||
+                                                                performance.artistName}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </CardContent>
                                         </Card>

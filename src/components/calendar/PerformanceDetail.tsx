@@ -1,12 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import {
     MapPin,
     Clock,
     Music,
     Users,
     Calendar,
+    User,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -30,6 +32,11 @@ export default function PerformanceDetail({
     performance,
     onClose,
 }: PerformanceDetailProps) {
+    const router = useRouter();
+
+    const handleArtistClick = () => {
+        router.push(`/profile/${performance.artistId}`);
+    };
     const getStatusBadge = (
         status: Performance['status']
     ) => {
@@ -198,6 +205,35 @@ export default function PerformanceDetail({
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Artist Information */}
+                        <div className="space-y-2">
+                            <h4 className="font-medium">
+                                작성자 정보
+                            </h4>
+                            <div
+                                className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg cursor-pointer hover:bg-muted/70 transition-colors"
+                                onClick={handleArtistClick}
+                            >
+                                <img
+                                    src={
+                                        performance.artistProfileImageUrl ||
+                                        '/default-profile.png'
+                                    }
+                                    alt="작성자 프로필"
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
+                                <div className="flex-1">
+                                    <p className="font-medium">
+                                        {performance.artistNickname ||
+                                            performance.artistName}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        프로필 보기
+                                    </p>
+                                </div>
                             </div>
                         </div>
 

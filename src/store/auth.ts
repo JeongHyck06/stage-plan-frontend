@@ -10,6 +10,7 @@ interface AuthState {
     setAuth: (authData: AuthResponse) => void;
     logout: () => void;
     setLoading: (loading: boolean) => void;
+    checkTokenExpiry: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -37,6 +38,37 @@ export const useAuthStore = create<AuthState>()(
             },
             setLoading: (loading: boolean) =>
                 set({ isLoading: loading }),
+            checkTokenExpiry: () => {
+                const { token } = get();
+                if (!token) return false;
+
+                try {
+                    // JWT 토큰의 payload 부분을 디코딩하여 만료 시간 확인
+                    const payload = JSON.parse(
+                        atob(token.split('.')[1])
+                    );
+                    const currentTime = Math.floor(
+                        Date.now() / 1000
+                    );
+
+                    if (
+                        payload.exp &&
+                        payload.exp < currentTime
+                    ) {
+                        // 토큰이 만료된 경우 로그아웃
+                        get().logout();
+                        return false;
+                    }
+                    return true;
+                } catch (error) {
+                    console.error(
+                        'Token validation error:',
+                        error
+                    );
+                    get().logout();
+                    return false;
+                }
+            },
         }),
         {
             name: 'auth-storage',

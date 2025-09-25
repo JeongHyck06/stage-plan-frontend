@@ -2,6 +2,13 @@ export interface User {
     id: number;
     email: string;
     name: string;
+    nickname?: string;
+    instagramId?: string;
+    bandName?: string;
+    profileImageUrl?: string;
+    representativeVideoUrl?: string;
+    favoriteGenres?: string;
+    bio?: string;
     createdAt: string;
 }
 
@@ -24,6 +31,9 @@ export interface Performance {
     maxAudience?: number;
     status: 'ACTIVE' | 'CANCELLED' | 'COMPLETED';
     artistName: string;
+    artistId: number;
+    artistNickname?: string;
+    artistProfileImageUrl?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -54,4 +64,14 @@ export interface CalendarEvent {
     genre: string;
     bandName: string;
     performance: Performance;
+}
+
+export interface UpdateProfileRequest {
+    nickname?: string;
+    instagramId?: string;
+    bandName?: string;
+    profileImageUrl?: string;
+    representativeVideoUrl?: string;
+    favoriteGenres?: string;
+    bio?: string;
 }

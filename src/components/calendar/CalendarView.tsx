@@ -8,6 +8,7 @@ import {
     MapPin,
     Clock,
     Music,
+    User,
 } from 'lucide-react';
 import {
     format,
@@ -30,12 +31,14 @@ interface CalendarViewProps {
     performances: Performance[];
     onDateSelect: (date: Date) => void;
     selectedDate?: Date;
+    onArtistClick?: (artistId: number) => void;
 }
 
 export default function CalendarView({
     performances,
     onDateSelect,
     selectedDate,
+    onArtistClick,
 }: CalendarViewProps) {
     const [currentMonth, setCurrentMonth] = useState(
         new Date()
@@ -327,6 +330,23 @@ export default function CalendarView({
                                                                         {
                                                                             performance.location
                                                                         }
+                                                                    </span>
+                                                                </div>
+                                                                <div
+                                                                    className="flex items-center space-x-1 text-xs opacity-80 cursor-pointer hover:opacity-100"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
+                                                                        e.stopPropagation();
+                                                                        onArtistClick?.(
+                                                                            performance.artistId
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <User className="h-2 w-2" />
+                                                                    <span className="truncate">
+                                                                        {performance.artistNickname ||
+                                                                            performance.artistName}
                                                                     </span>
                                                                 </div>
                                                             </div>

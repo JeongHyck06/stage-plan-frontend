@@ -81,15 +81,25 @@ export default function Header() {
                     </nav>
 
                     {/* User Actions */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    <div className="hidden md:flex items-center space-x-3">
                         {!isLoading && isAuthenticated ? (
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-3">
                                 <div className="flex items-center space-x-2 text-sm">
-                                    <User className="h-4 w-4" />
                                     <span className="text-muted-foreground">
-                                        {user?.name}
+                                        안녕하세요,
                                     </span>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        asChild
+                                        className="h-auto p-0 font-medium hover:bg-transparent"
+                                    >
+                                        <Link href="/profile">
+                                            {user?.name}
+                                        </Link>
+                                    </Button>
                                 </div>
+                                <div className="h-4 w-px bg-border"></div>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -164,15 +174,28 @@ export default function Header() {
                                 </Link>
                             ))}
 
-                            <div className="pt-4 border-t space-y-2">
+                            <div className="pt-4 border-t space-y-3">
                                 {!isLoading &&
                                 isAuthenticated ? (
                                     <>
-                                        <div className="flex items-center space-x-2 text-sm px-2">
-                                            <User className="h-4 w-4" />
-                                            <span className="text-muted-foreground">
-                                                {user?.name}
-                                            </span>
+                                        <div className="px-2 py-1">
+                                            <div className="flex items-center space-x-2 text-sm">
+                                                <span className="text-muted-foreground">
+                                                    안녕하세요,
+                                                </span>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    asChild
+                                                    className="h-auto p-0 font-medium hover:bg-transparent"
+                                                >
+                                                    <Link href="/profile">
+                                                        {
+                                                            user?.name
+                                                        }
+                                                    </Link>
+                                                </Button>
+                                            </div>
                                         </div>
                                         <Button
                                             variant="outline"
