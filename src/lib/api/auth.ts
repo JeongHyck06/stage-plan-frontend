@@ -12,6 +12,15 @@ export interface SignInRequest {
     password: string;
 }
 
+export interface EmailSendRequest {
+    email: string;
+}
+
+export interface EmailVerificationRequest {
+    email: string;
+    verificationCode: string;
+}
+
 export const authApi = {
     signUp: async (
         data: SignUpRequest
@@ -31,5 +40,19 @@ export const authApi = {
             data
         );
         return response.data;
+    },
+
+    sendVerificationEmail: async (
+        email: string
+    ): Promise<void> => {
+        await api.post('/api/email/send-verification', {
+            email,
+        });
+    },
+
+    verifyEmail: async (
+        data: EmailVerificationRequest
+    ): Promise<void> => {
+        await api.post('/api/email/verify', data);
     },
 };

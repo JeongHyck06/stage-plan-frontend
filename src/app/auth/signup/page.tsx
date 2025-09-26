@@ -23,14 +23,14 @@ import {
     type SignUpFormData,
 } from '@/lib/validations/auth';
 import { authApi } from '@/lib/api/auth';
-import { useAuthStore } from '@/store/auth';
+// import { useAuthStore } from '@/store/auth'; // 회원가입 시에는 사용하지 않음
 
 export default function SignUpPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] =
         useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { setAuth } = useAuthStore();
+    // 회원가입 시에는 인증 상태를 설정하지 않음
     const router = useRouter();
 
     const {
@@ -51,9 +51,15 @@ export default function SignUpPage() {
                 signUpData
             );
 
-            setAuth(response);
-            toast.success('회원가입이 완료되었습니다!');
-            router.push('/');
+            // 회원가입 성공 시 이메일 인증 페이지로 리다이렉트
+            toast.success(
+                '회원가입이 완료되었습니다! 이메일 인증을 완료해주세요.'
+            );
+            router.push(
+                `/auth/verify-email?email=${encodeURIComponent(
+                    signUpData.email
+                )}`
+            );
         } catch (error) {
             toast.error('회원가입에 실패했습니다.');
         } finally {
