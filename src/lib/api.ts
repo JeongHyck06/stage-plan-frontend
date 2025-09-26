@@ -129,19 +129,32 @@ api.interceptors.response.use(
 
         if (
             error.response?.status === 401 ||
+            error.response?.status === 403 ||
             error.response?.status === 500
         ) {
-            // JWT 토큰 만료 또는 인증 실패 시 로그아웃 처리
-            console.warn(
-                'API Response interceptor - Authentication failed, redirecting to login'
-            );
-            // Zustand persist에서 auth 데이터 제거
-            localStorage.removeItem('auth-storage');
-            // 현재 페이지가 로그인 페이지가 아닌 경우에만 리다이렉트
+            // 이메일 인증 관련 엔드포인트는 리다이렉트에서 제외
+            const isEmailVerificationEndpoint =
+                error.config?.url?.includes('/api/email/');
+            const isAuthEndpoint =
+                error.config?.url?.includes('/api/auth/');
+
             if (
-                window.location.pathname !== '/auth/login'
+                !isEmailVerificationEndpoint &&
+                !isAuthEndpoint
             ) {
-                window.location.href = '/auth/login';
+                // JWT 토큰 만료 또는 인증 실패 시 로그아웃 처리
+                console.warn(
+                    'API Response interceptor - Authentication failed, redirecting to login'
+                );
+                // Zustand persist에서 auth 데이터 제거
+                localStorage.removeItem('auth-storage');
+                // 현재 페이지가 로그인 페이지가 아닌 경우에만 리다이렉트
+                if (
+                    window.location.pathname !==
+                    '/auth/login'
+                ) {
+                    window.location.href = '/auth/login';
+                }
             }
         }
         return Promise.reject(error);

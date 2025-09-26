@@ -47,8 +47,25 @@ export default function LoginPage() {
             setAuth(response);
             toast.success('로그인되었습니다!');
             router.push('/');
-        } catch (error) {
-            toast.error('로그인에 실패했습니다.');
+        } catch (error: any) {
+            const errorMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                '로그인에 실패했습니다.';
+
+            if (errorMessage.includes('이메일 인증')) {
+                toast.error(
+                    '이메일 인증이 필요합니다. 이메일을 확인하고 인증을 완료해주세요.'
+                );
+                // 이메일 인증 페이지로 리다이렉트
+                router.push(
+                    `/auth/verify-email?email=${encodeURIComponent(
+                        data.email
+                    )}`
+                );
+            } else {
+                toast.error(errorMessage);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -188,7 +205,7 @@ export default function LoginPage() {
                             </Button>
                         </form>
 
-                        <div className="mt-6 text-center">
+                        <div className="mt-6 space-y-3 text-center">
                             <p className="text-sm text-muted-foreground">
                                 아직 계정이 없으신가요?{' '}
                                 <Link
@@ -196,6 +213,15 @@ export default function LoginPage() {
                                     className="font-medium text-primary hover:underline"
                                 >
                                     가입하기
+                                </Link>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                이메일 인증이 필요하신가요?{' '}
+                                <Link
+                                    href="/auth/verify-email"
+                                    className="font-medium text-primary hover:underline"
+                                >
+                                    이메일 인증하기
                                 </Link>
                             </p>
                         </div>

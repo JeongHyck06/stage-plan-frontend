@@ -38,5 +38,22 @@ export const signInSchema = z.object({
     password: z.string().min(1, '비밀번호를 입력해주세요'),
 });
 
+export const emailVerificationSchema = z.object({
+    email: z
+        .string()
+        .min(1, '이메일을 입력해주세요')
+        .email('올바른 이메일 형식을 입력해주세요'),
+    verificationCode: z
+        .string()
+        .min(1, '인증 코드를 입력해주세요')
+        .regex(
+            /^\d{6}$/,
+            '인증 코드는 6자리 숫자여야 합니다'
+        ),
+});
+
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
+export type EmailVerificationFormData = z.infer<
+    typeof emailVerificationSchema
+>;
