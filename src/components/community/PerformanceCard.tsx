@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     MapPin,
@@ -37,14 +37,12 @@ export default function PerformanceCard({
 }: PerformanceCardProps) {
     const [reviewCount, setReviewCount] = useState(0);
     const [averageRating, setAverageRating] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
 
     // 리뷰 정보 로드
-    const loadReviewStats = async () => {
+    const loadReviewStats = useCallback(async () => {
         if (!showReviews) return;
 
         try {
-            setIsLoading(true);
             const reviews =
                 await reviewApi.getReviewsByPerformanceId(
                     performance.id
@@ -60,17 +58,15 @@ export default function PerformanceCard({
                     totalRating / reviews.length
                 );
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('리뷰 정보 로드 실패:', error);
-        } finally {
-            setIsLoading(false);
         }
-    };
+    }, [performance.id, showReviews]);
 
     // 컴포넌트 마운트 시 리뷰 정보 로드
     useEffect(() => {
         loadReviewStats();
-    }, [performance.id]);
+    }, [performance.id, loadReviewStats]);
 
     const getStatusBadge = (
         status: Performance['status']

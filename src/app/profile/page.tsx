@@ -1,18 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-    User,
     Camera,
     Music,
     Instagram,
     Edit3,
     Save,
     X,
-    MapPin,
-    Calendar,
     ExternalLink,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -35,11 +33,8 @@ import {
 
 export default function ProfilePage() {
     const router = useRouter();
-    const {
-        user,
-        isAuthenticated,
-        isLoading: authLoading,
-    } = useAuthStore();
+    const { isAuthenticated, isLoading: authLoading } =
+        useAuthStore();
     const [profile, setProfile] = useState<UserType | null>(
         null
     );
@@ -84,7 +79,8 @@ export default function ProfilePage() {
                     profileData.favoriteGenres || '',
                 bio: profileData.bio || '',
             });
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error('Failed to load profile:', error);
             toast.error(
                 '프로필을 불러오는데 실패했습니다.'
             );
@@ -103,7 +99,11 @@ export default function ProfilePage() {
             toast.success(
                 '프로필이 성공적으로 업데이트되었습니다.'
             );
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(
+                'Failed to update profile:',
+                error
+            );
             toast.error('프로필 업데이트에 실패했습니다.');
         } finally {
             setIsLoading(false);
@@ -221,12 +221,14 @@ export default function ProfilePage() {
                             <div className="text-center space-y-4">
                                 {/* Profile Image */}
                                 <div className="relative">
-                                    <img
+                                    <Image
                                         src={
                                             profile.profileImageUrl ||
                                             '/default-profile.png'
                                         }
                                         alt="프로필 이미지"
+                                        width={128}
+                                        height={128}
                                         className="w-32 h-32 rounded-full mx-auto object-cover"
                                     />
                                     {isEditing && (

@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import {
     Calendar,
-    Clock,
     MapPin,
     Music,
     Users,
@@ -114,7 +113,7 @@ export default function PerformanceForm({
             setPerformances(updatedPerformances);
 
             onSuccess();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(
                 'Performance form submission error:',
                 error
@@ -125,15 +124,35 @@ export default function PerformanceForm({
                 : '공연 등록에 실패했습니다.';
 
             // 구체적인 에러 메시지가 있으면 표시
-            if (error.response?.data?.message) {
-                errorMessage += ` (${error.response.data.message})`;
-            } else if (error.response?.status === 401) {
-                errorMessage = '로그인이 필요합니다.';
-            } else if (error.response?.status === 403) {
-                errorMessage = '권한이 없습니다.';
-            } else if (error.response?.status >= 500) {
-                errorMessage =
-                    '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+            if (
+                error &&
+                typeof error === 'object' &&
+                'response' in error
+            ) {
+                const responseError = error as {
+                    response?: {
+                        data?: { message?: string };
+                        status?: number;
+                    };
+                };
+
+                if (responseError.response?.data?.message) {
+                    errorMessage += ` (${responseError.response.data.message})`;
+                } else if (
+                    responseError.response?.status === 401
+                ) {
+                    errorMessage = '로그인이 필요합니다.';
+                } else if (
+                    responseError.response?.status === 403
+                ) {
+                    errorMessage = '권한이 없습니다.';
+                } else if (
+                    responseError.response?.status &&
+                    responseError.response.status >= 500
+                ) {
+                    errorMessage =
+                        '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                }
             }
 
             toast.error(errorMessage);

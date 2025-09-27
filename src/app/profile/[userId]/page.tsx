@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-    User,
     Music,
     Instagram,
-    MapPin,
-    Calendar,
     ArrowLeft,
     ExternalLink,
 } from 'lucide-react';
@@ -33,24 +31,24 @@ export default function UserProfilePage() {
     );
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (userId) {
-            loadUserProfile();
-        }
-    }, [userId]);
-
-    const loadUserProfile = async () => {
+    const loadUserProfile = useCallback(async () => {
         try {
             setIsLoading(true);
             const profileData =
                 await userApi.getUserProfile(userId);
             setProfile(profileData);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('프로필 로드 실패:', error);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        if (userId) {
+            loadUserProfile();
+        }
+    }, [userId, loadUserProfile]);
 
     if (isLoading) {
         return (
@@ -111,12 +109,14 @@ export default function UserProfilePage() {
                             <div className="text-center space-y-4">
                                 {/* Profile Image */}
                                 <div className="relative">
-                                    <img
+                                    <Image
                                         src={
                                             profile.profileImageUrl ||
                                             '/default-profile.png'
                                         }
                                         alt="프로필 이미지"
+                                        width={128}
+                                        height={128}
                                         className="w-32 h-32 rounded-full mx-auto object-cover"
                                     />
                                 </div>

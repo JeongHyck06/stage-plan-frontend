@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import {
     useRouter,
     useSearchParams,
@@ -34,7 +34,7 @@ import {
 import { authApi } from '@/lib/api/auth';
 import { useAuthStore } from '@/store/auth';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [isCodeSent, setIsCodeSent] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
@@ -335,5 +335,19 @@ export default function VerifyEmailPage() {
                 </Card>
             </motion.div>
         </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            }
+        >
+            <VerifyEmailContent />
+        </Suspense>
     );
 }

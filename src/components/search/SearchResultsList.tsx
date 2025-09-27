@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronUp, User } from 'lucide-react';
@@ -413,12 +414,14 @@ export default function SearchResultsList({
                                             )
                                         }
                                     >
-                                        <img
+                                        <Image
                                             src={
                                                 expandedPerformance.artistProfileImageUrl ||
                                                 '/default-profile.png'
                                             }
                                             alt="작성자 프로필"
+                                            width={40}
+                                            height={40}
                                             className="w-10 h-10 rounded-full object-cover"
                                         />
                                         <div className="flex-1">

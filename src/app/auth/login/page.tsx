@@ -47,11 +47,34 @@ export default function LoginPage() {
             setAuth(response);
             toast.success('로그인되었습니다!');
             router.push('/');
-        } catch (error: any) {
-            const errorMessage =
-                error?.response?.data?.message ||
-                error?.message ||
-                '로그인에 실패했습니다.';
+        } catch (error: unknown) {
+            const errorMessage = (() => {
+                if (
+                    error &&
+                    typeof error === 'object' &&
+                    'response' in error
+                ) {
+                    const responseError = error as {
+                        response?: {
+                            data?: { message?: string };
+                        };
+                    };
+                    return (
+                        responseError.response?.data
+                            ?.message ||
+                        '로그인에 실패했습니다.'
+                    );
+                }
+                if (
+                    error &&
+                    typeof error === 'object' &&
+                    'message' in error
+                ) {
+                    return (error as { message: string })
+                        .message;
+                }
+                return '로그인에 실패했습니다.';
+            })();
 
             if (errorMessage.includes('이메일 인증')) {
                 toast.error(

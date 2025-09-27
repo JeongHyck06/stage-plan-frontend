@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     Edit,
     Trash2,
-    Eye,
     Calendar,
     MapPin,
     Clock,
@@ -50,7 +49,11 @@ export default function PerformanceManagement({
             await performanceApi.deletePerformance(id);
             toast.success('공연이 삭제되었습니다.');
             onRefresh();
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(
+                'Failed to delete performance:',
+                error
+            );
             toast.error('공연 삭제에 실패했습니다.');
         } finally {
             setDeletingId(null);
@@ -61,13 +64,9 @@ export default function PerformanceManagement({
         status: Performance['status']
     ) => {
         switch (status) {
-            case 'UPCOMING':
+            case 'ACTIVE':
                 return (
-                    <Badge variant="success">예정</Badge>
-                );
-            case 'ONGOING':
-                return (
-                    <Badge variant="warning">진행중</Badge>
+                    <Badge variant="success">활성</Badge>
                 );
             case 'COMPLETED':
                 return (
@@ -88,13 +87,6 @@ export default function PerformanceManagement({
         }
     };
 
-    const formatDateTime = (date: string, time: string) => {
-        const dateTime = new Date(`${date}T${time}`);
-        return format(dateTime, 'yyyy년 M월 d일 HH:mm', {
-            locale: ko,
-        });
-    };
-
     const getPerformancesByStatus = (
         status: Performance['status']
     ) => {
@@ -105,14 +97,9 @@ export default function PerformanceManagement({
 
     const statusGroups = [
         {
-            status: 'UPCOMING' as const,
-            title: '예정된 공연',
+            status: 'ACTIVE' as const,
+            title: '활성 공연',
             color: 'text-green-600',
-        },
-        {
-            status: 'ONGOING' as const,
-            title: '진행 중인 공연',
-            color: 'text-yellow-600',
         },
         {
             status: 'COMPLETED' as const,
@@ -204,9 +191,14 @@ export default function PerformanceManagement({
                                                     <div className="flex items-center space-x-2">
                                                         <Calendar className="h-4 w-4 text-muted-foreground" />
                                                         <span>
-                                                            {formatDateTime(
-                                                                performance.performanceDate,
-                                                                performance.startTime
+                                                            {format(
+                                                                new Date(
+                                                                    performance.performanceDate
+                                                                ),
+                                                                'yyyy년 M월 d일',
+                                                                {
+                                                                    locale: ko,
+                                                                }
                                                             )}
                                                         </span>
                                                     </div>
@@ -214,20 +206,16 @@ export default function PerformanceManagement({
                                                         <MapPin className="h-4 w-4 text-muted-foreground" />
                                                         <span className="line-clamp-1">
                                                             {
-                                                                performance.venue
+                                                                performance.location
                                                             }
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">
                                                         <Clock className="h-4 w-4 text-muted-foreground" />
                                                         <span>
-                                                            {
-                                                                performance.startTime
-                                                            }{' '}
-                                                            -{' '}
-                                                            {
-                                                                performance.endTime
-                                                            }
+                                                            공연
+                                                            시간
+                                                            미정
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">

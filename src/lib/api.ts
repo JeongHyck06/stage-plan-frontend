@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useAuthStore } from '@/store/auth';
 
 const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_URL ||

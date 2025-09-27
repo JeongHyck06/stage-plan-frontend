@@ -7,8 +7,6 @@ import { motion } from 'framer-motion';
 import {
     Calendar,
     Users,
-    Search,
-    User,
     LogOut,
     Menu,
     X,
