@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Star, User, Calendar } from 'lucide-react';
+import { Star, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -99,9 +100,11 @@ export default function ReviewCard({
                             className="flex items-center space-x-3 cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors"
                             onClick={handleUserClick}
                         >
-                            <img
+                            <Image
                                 src="/default-profile.png"
                                 alt="사용자 프로필"
+                                width={40}
+                                height={40}
                                 className="h-10 w-10 rounded-full object-cover"
                             />
                             <div>

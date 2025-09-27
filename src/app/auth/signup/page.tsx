@@ -37,7 +37,6 @@ export default function SignUpPage() {
         register,
         handleSubmit,
         formState: { errors },
-        watch,
     } = useForm<SignUpFormData>({
         resolver: zodResolver(signUpSchema),
     });
@@ -45,11 +44,10 @@ export default function SignUpPage() {
     const onSubmit = async (data: SignUpFormData) => {
         try {
             setIsLoading(true);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { confirmPassword: _, ...signUpData } =
                 data;
-            const response = await authApi.signUp(
-                signUpData
-            );
+            await authApi.signUp(signUpData);
 
             // 회원가입 성공 시 이메일 인증 페이지로 리다이렉트
             toast.success(
@@ -60,7 +58,8 @@ export default function SignUpPage() {
                     signUpData.email
                 )}`
             );
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error('Signup failed:', error);
             toast.error('회원가입에 실패했습니다.');
         } finally {
             setIsLoading(false);

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
     MapPin,
@@ -8,7 +9,6 @@ import {
     Music,
     Users,
     Calendar,
-    User,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -217,12 +217,14 @@ export default function PerformanceDetail({
                                 className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg cursor-pointer hover:bg-muted/70 transition-colors"
                                 onClick={handleArtistClick}
                             >
-                                <img
+                                <Image
                                     src={
                                         performance.artistProfileImageUrl ||
                                         '/default-profile.png'
                                     }
                                     alt="작성자 프로필"
+                                    width={40}
+                                    height={40}
                                     className="w-10 h-10 rounded-full object-cover"
                                 />
                                 <div className="flex-1">

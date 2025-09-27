@@ -92,20 +92,30 @@ export const performanceApi = {
                 response.data
             );
             return response.data;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 'Failed to create performance:',
                 error
             );
             console.error('Request data:', formattedData);
-            if (error.response) {
+            if (
+                error &&
+                typeof error === 'object' &&
+                'response' in error
+            ) {
+                const responseError = error as {
+                    response?: {
+                        status?: number;
+                        data?: unknown;
+                    };
+                };
                 console.error(
                     'Response status:',
-                    error.response.status
+                    responseError.response?.status
                 );
                 console.error(
                     'Response data:',
-                    error.response.data
+                    responseError.response?.data
                 );
             }
             throw error;

@@ -7,8 +7,7 @@ import { useAuthStore } from '@/store/auth';
 
 export default function CreatePerformancePage() {
     const router = useRouter();
-    const { isAuthenticated, user, isLoading } =
-        useAuthStore();
+    const { isAuthenticated, isLoading } = useAuthStore();
 
     useEffect(() => {
         // 로딩이 완료되고 인증되지 않은 경우에만 리다이렉트

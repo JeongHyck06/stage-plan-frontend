@@ -7,12 +7,7 @@ import { Calendar, Settings } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import PerformanceManagement from '@/components/performance/PerformanceManagement';
 import PerformanceForm from '@/components/performance/PerformanceForm';
 import { useAuthStore } from '@/store/auth';
@@ -31,8 +26,7 @@ export default function ManagePerformancesPage() {
     const [editingPerformance, setEditingPerformance] =
         useState<Performance | null>(null);
 
-    const { isAuthenticated, user, isLoading } =
-        useAuthStore();
+    const { isAuthenticated, isLoading } = useAuthStore();
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -50,7 +44,11 @@ export default function ManagePerformancesPage() {
             const data =
                 await performanceApi.getMyPerformances();
             setPerformances(data);
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(
+                'Failed to load performances:',
+                error
+            );
             toast.error(
                 '공연 정보를 불러오는데 실패했습니다.'
             );
@@ -80,7 +78,7 @@ export default function ManagePerformancesPage() {
 
     const getTotalPerformances = () => performances.length;
     const getUpcomingPerformances = () =>
-        performances.filter((p) => p.status === 'UPCOMING')
+        performances.filter((p) => p.status === 'ACTIVE')
             .length;
     const getCompletedPerformances = () =>
         performances.filter((p) => p.status === 'COMPLETED')

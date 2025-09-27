@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
     Users,
@@ -12,12 +12,7 @@ import {
 import toast from 'react-hot-toast';
 
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import PerformanceCard from '@/components/community/PerformanceCard';
 import ReviewCard from '@/components/community/ReviewCard';
@@ -46,24 +41,28 @@ export default function CommunityPage() {
     const { performances, setPerformances, setLoading } =
         usePerformanceStore();
 
-    useEffect(() => {
-        loadPerformances();
-    }, []);
-
-    const loadPerformances = async () => {
+    const loadPerformances = useCallback(async () => {
         try {
             setLoading(true);
             const data =
                 await performanceApi.getAllPerformances();
             setPerformances(data);
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(
+                'Failed to load performances:',
+                error
+            );
             toast.error(
                 '공연 정보를 불러오는데 실패했습니다.'
             );
         } finally {
             setLoading(false);
         }
-    };
+    }, [setLoading, setPerformances]);
+
+    useEffect(() => {
+        loadPerformances();
+    }, [loadPerformances]);
 
     const loadReviews = async (performanceId: number) => {
         try {
@@ -73,7 +72,8 @@ export default function CommunityPage() {
                     performanceId
                 );
             setReviews(data);
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error('Failed to load reviews:', error);
             toast.error('리뷰를 불러오는데 실패했습니다.');
         } finally {
             setIsLoading(false);
@@ -112,7 +112,11 @@ export default function CommunityPage() {
             if (selectedPerformance) {
                 await loadReviews(selectedPerformance.id);
             }
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(
+                'Failed to delete review:',
+                error
+            );
             toast.error('리뷰 삭제에 실패했습니다.');
         }
     };
@@ -136,10 +140,6 @@ export default function CommunityPage() {
         return performances.filter(
             (p) => p.status === 'ACTIVE'
         );
-    };
-
-    const getRecentReviews = () => {
-        return reviews.slice(0, 5);
     };
 
     return (

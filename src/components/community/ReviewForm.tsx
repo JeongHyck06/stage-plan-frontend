@@ -89,7 +89,11 @@ export default function ReviewForm({
             }
 
             onSuccess();
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error(
+                'Failed to submit review:',
+                error
+            );
             toast.error('리뷰 작성에 실패했습니다.');
         } finally {
             setIsSubmitting(false);
