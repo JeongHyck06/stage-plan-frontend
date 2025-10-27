@@ -320,6 +320,9 @@ export default function Home() {
                     onDateSelect={handleDateSelect}
                     selectedDate={selectedDate}
                     onArtistClick={handleArtistClick}
+                    onPerformanceSelect={
+                        handlePerformanceSelect
+                    }
                 />
             </motion.div>
 

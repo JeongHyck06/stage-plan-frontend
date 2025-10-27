@@ -37,6 +37,18 @@ export default function PerformanceDetail({
     const handleArtistClick = () => {
         router.push(`/profile/${performance.artistId}`);
     };
+
+    const isValidUrl = (
+        url: string | null | undefined
+    ): boolean => {
+        if (!url) return false;
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    };
     const getStatusBadge = (
         status: Performance['status']
     ) => {
@@ -219,8 +231,11 @@ export default function PerformanceDetail({
                             >
                                 <Image
                                     src={
-                                        performance.artistProfileImageUrl ||
-                                        '/default-profile.png'
+                                        isValidUrl(
+                                            performance.artistProfileImageUrl
+                                        )
+                                            ? performance.artistProfileImageUrl!
+                                            : '/default-profile.png'
                                     }
                                     alt="작성자 프로필"
                                     width={40}

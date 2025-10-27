@@ -1,8 +1,15 @@
 import axios from 'axios';
 
-const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
-    'http://localhost:8080';
+// 로컬 개발용 API URL 설정
+const getApiBaseUrl = () => {
+    // 로컬 개발 환경에서는 항상 localhost:8080 사용
+    console.log(
+        'Using local API URL: http://localhost:8080'
+    );
+    return 'http://localhost:8080';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
     baseURL: API_BASE_URL,
@@ -12,7 +19,10 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    // Zustand persist에서 토큰 가져오기
+    if (typeof window === 'undefined') {
+        return config;
+    }
+
     const authStorage =
         localStorage.getItem('auth-storage');
     console.log(
@@ -30,7 +40,6 @@ api.interceptors.request.use((config) => {
             );
 
             if (token) {
-                // 토큰 만료 체크
                 try {
                     const payload = JSON.parse(
                         atob(token.split('.')[1])

@@ -25,12 +25,16 @@ import { ko } from 'date-fns/locale';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Performance } from '@/types';
+import PerformanceSelectionModal from './PerformanceSelectionModal';
 
 interface CalendarViewProps {
     performances: Performance[];
     onDateSelect: (date: Date) => void;
     selectedDate?: Date;
     onArtistClick?: (artistId: number) => void;
+    onPerformanceSelect?: (
+        performance: Performance
+    ) => void;
 }
 
 export default function CalendarView({
@@ -38,10 +42,17 @@ export default function CalendarView({
     onDateSelect,
     selectedDate,
     onArtistClick,
+    onPerformanceSelect,
 }: CalendarViewProps) {
     const [currentMonth, setCurrentMonth] = useState(
         new Date()
     );
+    const [showSelectionModal, setShowSelectionModal] =
+        useState(false);
+    const [selectedDateForModal, setSelectedDateForModal] =
+        useState<Date | null>(null);
+    const [performancesForModal, setPerformancesForModal] =
+        useState<Performance[]>([]);
 
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
@@ -103,6 +114,37 @@ export default function CalendarView({
                 ? subMonths(prev, 1)
                 : addMonths(prev, 1)
         );
+    };
+
+    const handleDateClick = (date: Date) => {
+        const dayPerformances =
+            getPerformancesForDate(date);
+
+        if (dayPerformances.length === 0) {
+            // 공연이 없으면 기존 로직 실행
+            onDateSelect(date);
+        } else if (dayPerformances.length === 1) {
+            // 공연이 1개면 바로 선택
+            onPerformanceSelect?.(dayPerformances[0]);
+        } else {
+            // 공연이 여러 개면 선택 모달 표시
+            setSelectedDateForModal(date);
+            setPerformancesForModal(dayPerformances);
+            setShowSelectionModal(true);
+        }
+    };
+
+    const handlePerformanceSelect = (
+        performance: Performance
+    ) => {
+        setShowSelectionModal(false);
+        onPerformanceSelect?.(performance);
+    };
+
+    const handleCloseModal = () => {
+        setShowSelectionModal(false);
+        setSelectedDateForModal(null);
+        setPerformancesForModal([]);
     };
 
     const getPerformanceColor = (
@@ -235,7 +277,9 @@ export default function CalendarView({
                                         }
                                     `}
                                     onClick={() =>
-                                        onDateSelect(date)
+                                        handleDateClick(
+                                            date
+                                        )
                                     }
                                 >
                                     <div
@@ -370,6 +414,25 @@ export default function CalendarView({
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Performance Selection Modal */}
+            <AnimatePresence>
+                {showSelectionModal &&
+                    selectedDateForModal && (
+                        <PerformanceSelectionModal
+                            performances={
+                                performancesForModal
+                            }
+                            selectedDate={
+                                selectedDateForModal
+                            }
+                            onSelect={
+                                handlePerformanceSelect
+                            }
+                            onClose={handleCloseModal}
+                        />
+                    )}
+            </AnimatePresence>
         </div>
     );
 }
