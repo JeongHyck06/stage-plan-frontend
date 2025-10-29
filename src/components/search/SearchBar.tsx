@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,6 +43,18 @@ export default function SearchBar({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // 검색 조건이 하나도 없으면 경고 메시지 표시
+        const hasSearchConditions =
+            (filters.keyword && filters.keyword.trim()) ||
+            (filters.genre && filters.genre.trim()) ||
+            (filters.bandName && filters.bandName.trim());
+
+        if (!hasSearchConditions) {
+            toast.error('검색어를 입력해주세요.');
+            return;
+        }
+
         onSearch(filters);
     };
 

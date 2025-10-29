@@ -70,10 +70,10 @@ export default function Home() {
         loadPerformances();
     }, [loadPerformances]);
 
-    // 캘린더 이벤트 생성
+    // 캘린더 이벤트 생성 (전체 공연 데이터 기반)
     useEffect(() => {
-        const events: CalendarEvent[] =
-            filteredPerformances.map((performance) => ({
+        const events: CalendarEvent[] = performances.map(
+            (performance) => ({
                 id: performance.id,
                 title: performance.title,
                 date: new Date(performance.performanceDate),
@@ -87,9 +87,10 @@ export default function Home() {
                 genre: performance.genre,
                 bandName: performance.bandName,
                 performance,
-            }));
+            })
+        );
         setCalendarEvents(events);
-    }, [filteredPerformances, setCalendarEvents]);
+    }, [performances, setCalendarEvents]);
 
     const handleSearch = async (filters: SearchFilters) => {
         try {
@@ -110,9 +111,13 @@ export default function Home() {
         clearFilters();
     };
 
+    const handleShowAllPerformances = () => {
+        setFilteredPerformances(performances);
+    };
+
     const handleDateSelect = (date: Date) => {
         setSelectedDate(date);
-        const dayPerformances = filteredPerformances.filter(
+        const dayPerformances = performances.filter(
             (performance) => {
                 const performanceDate = new Date(
                     performance.performanceDate
@@ -145,22 +150,20 @@ export default function Home() {
 
     const getTodayPerformances = () => {
         const today = new Date();
-        return filteredPerformances.filter(
-            (performance) => {
-                const performanceDate = new Date(
-                    performance.performanceDate
-                );
-                return (
-                    performanceDate.toDateString() ===
-                    today.toDateString()
-                );
-            }
-        );
+        return performances.filter((performance) => {
+            const performanceDate = new Date(
+                performance.performanceDate
+            );
+            return (
+                performanceDate.toDateString() ===
+                today.toDateString()
+            );
+        });
     };
 
     const getUpcomingPerformances = () => {
         const today = new Date();
-        return filteredPerformances
+        return performances
             .filter(
                 (performance) =>
                     new Date(performance.performanceDate) >
@@ -209,7 +212,7 @@ export default function Home() {
             </motion.div>
 
             {/* Search Results */}
-            {filteredPerformances.length > 0 && (
+            {filteredPerformances.length > 0 ? (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -223,7 +226,38 @@ export default function Home() {
                         isLoading={isLoading}
                     />
                 </motion.div>
-            )}
+            ) : performances.length > 0 ? (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="text-center py-8"
+                >
+                    <Card>
+                        <CardContent className="p-8">
+                            <Music className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                            <h3 className="text-lg font-medium mb-2">
+                                검색 결과를 확인하려면
+                                검색어를 입력하세요
+                            </h3>
+                            <p className="text-muted-foreground mb-4">
+                                공연명, 밴드명, 장르로
+                                검색하거나 전체 공연을
+                                확인할 수 있습니다.
+                            </p>
+                            <Button
+                                onClick={
+                                    handleShowAllPerformances
+                                }
+                                variant="outline"
+                            >
+                                전체 공연 보기 (
+                                {performances.length}개)
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            ) : null}
 
             {/* Quick Stats */}
             <motion.div
@@ -316,7 +350,7 @@ export default function Home() {
                 </div>
 
                 <CalendarView
-                    performances={filteredPerformances}
+                    performances={performances}
                     onDateSelect={handleDateSelect}
                     selectedDate={selectedDate}
                     onArtistClick={handleArtistClick}
@@ -346,7 +380,7 @@ export default function Home() {
                     </h3>
                     {(() => {
                         const selectedDatePerformances =
-                            filteredPerformances.filter(
+                            performances.filter(
                                 (performance) => {
                                     const performanceDate =
                                         new Date(

@@ -30,11 +30,9 @@ export const usePerformanceStore = create<PerformanceState>(
         isLoading: false,
         setPerformances: (performances: Performance[]) => {
             set({ performances });
-            // 필터가 없으면 모든 공연을 표시
-            const { searchFilters } = get();
-            if (Object.keys(searchFilters).length === 0) {
-                set({ filteredPerformances: performances });
-            }
+            // 초기 로드 시에는 filteredPerformances를 빈 배열로 설정
+            // 사용자가 명시적으로 검색해야만 결과가 표시됨
+            set({ filteredPerformances: [] });
         },
         setFilteredPerformances: (
             performances: Performance[]
@@ -46,10 +44,9 @@ export const usePerformanceStore = create<PerformanceState>(
         setLoading: (loading: boolean) =>
             set({ isLoading: loading }),
         clearFilters: () => {
-            const { performances } = get();
             set({
                 searchFilters: {},
-                filteredPerformances: performances,
+                filteredPerformances: [],
             });
         },
     })
