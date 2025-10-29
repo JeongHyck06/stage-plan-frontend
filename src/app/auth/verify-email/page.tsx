@@ -40,6 +40,8 @@ function VerifyEmailContent() {
     const [isVerified, setIsVerified] = useState(false);
     const [isPageLoading, setIsPageLoading] =
         useState(true);
+    const [emailSendAttempted, setEmailSendAttempted] =
+        useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const email = searchParams.get('email') || '';
@@ -79,25 +81,38 @@ function VerifyEmailContent() {
         }
     }, [isAuthenticated, authLoading, email, router]);
 
-    // 이메일이 있으면 자동으로 인증 코드 발송
+    // 이메일이 있으면 자동으로 인증 코드 발송 (한 번만)
     useEffect(() => {
         if (
             email &&
             !isCodeSent &&
+            !emailSendAttempted &&
             !isPageLoading &&
             !authLoading
         ) {
+            setEmailSendAttempted(true);
             onSendCode(email);
         }
-    }, [email, isCodeSent, isPageLoading, authLoading]);
+    }, [
+        email,
+        isCodeSent,
+        emailSendAttempted,
+        isPageLoading,
+        authLoading,
+    ]);
 
-    const onSendCode = async (email: string) => {
+    const onSendCode = async (
+        email: string,
+        isManual: boolean = false
+    ) => {
         try {
             setIsLoading(true);
             await authApi.sendVerificationEmail(email);
             setIsCodeSent(true);
             toast.success(
-                '인증 코드가 발송되었습니다. 이메일을 확인해주세요.'
+                isManual
+                    ? '인증 코드가 재발송되었습니다. 이메일을 확인해주세요.'
+                    : '인증 코드가 발송되었습니다. 이메일을 확인해주세요.'
             );
         } catch (error: unknown) {
             const errorMessage =
@@ -110,6 +125,11 @@ function VerifyEmailContent() {
                 )?.response?.data?.message ||
                 '인증 코드 발송에 실패했습니다.';
             toast.error(errorMessage);
+
+            // 자동 발송 실패 시에도 isCodeSent를 true로 설정하여 UI 표시
+            if (!isManual) {
+                setIsCodeSent(true);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -290,6 +310,28 @@ function VerifyEmailContent() {
                                         ? '인증 중...'
                                         : '인증 완료'}
                                 </Button>
+
+                                <div className="mt-4 text-center">
+                                    <p className="text-sm text-gray-600 mb-2">
+                                        인증 코드를 받지
+                                        못하셨나요?
+                                    </p>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            onSendCode(
+                                                watchedEmail,
+                                                true
+                                            )
+                                        }
+                                        disabled={isLoading}
+                                        className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                                    >
+                                        인증 코드 재발송
+                                    </Button>
+                                </div>
                             </form>
                         )}
 

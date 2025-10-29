@@ -70,7 +70,6 @@ export interface UpdateProfileRequest {
     nickname?: string;
     instagramId?: string;
     bandName?: string;
-    profileImageUrl?: string;
     representativeVideoUrl?: string;
     favoriteGenres?: string;
     bio?: string;

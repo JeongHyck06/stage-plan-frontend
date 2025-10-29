@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-    Camera,
     Music,
     Instagram,
     Edit3,
@@ -70,8 +69,6 @@ export default function ProfilePage() {
                 nickname: profileData.nickname || '',
                 instagramId: profileData.instagramId || '',
                 bandName: profileData.bandName || '',
-                profileImageUrl:
-                    profileData.profileImageUrl || '',
                 representativeVideoUrl:
                     profileData.representativeVideoUrl ||
                     '',
@@ -116,8 +113,6 @@ export default function ProfilePage() {
                 nickname: profile.nickname || '',
                 instagramId: profile.instagramId || '',
                 bandName: profile.bandName || '',
-                profileImageUrl:
-                    profile.profileImageUrl || '',
                 representativeVideoUrl:
                     profile.representativeVideoUrl || '',
                 favoriteGenres:
@@ -231,14 +226,6 @@ export default function ProfilePage() {
                                         height={128}
                                         className="w-32 h-32 rounded-full mx-auto object-cover"
                                     />
-                                    {isEditing && (
-                                        <Button
-                                            size="sm"
-                                            className="absolute bottom-0 right-0 rounded-full"
-                                        >
-                                            <Camera className="h-4 w-4" />
-                                        </Button>
-                                    )}
                                 </div>
 
                                 {/* Basic Info */}
@@ -468,54 +455,6 @@ export default function ProfilePage() {
                                         </p>
                                     )}
                                 </div>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium">
-                                    프로필 이미지 URL
-                                </label>
-                                {isEditing ? (
-                                    <Input
-                                        value={
-                                            formData.profileImageUrl ||
-                                            ''
-                                        }
-                                        onChange={(e) =>
-                                            handleInputChange(
-                                                'profileImageUrl',
-                                                e.target
-                                                    .value
-                                            )
-                                        }
-                                        placeholder="이미지 URL을 입력하세요"
-                                    />
-                                ) : (
-                                    <div>
-                                        {profile.profileImageUrl ? (
-                                            <a
-                                                href={
-                                                    profile.profileImageUrl
-                                                }
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 hover:underline"
-                                            >
-                                                <span className="truncate">
-                                                    {
-                                                        profile.profileImageUrl
-                                                    }
-                                                </span>
-                                                <ExternalLink className="h-4 w-4" />
-                                            </a>
-                                        ) : (
-                                            <p className="text-muted-foreground">
-                                                프로필
-                                                이미지가
-                                                없습니다.
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
                             </div>
 
                             <div>
